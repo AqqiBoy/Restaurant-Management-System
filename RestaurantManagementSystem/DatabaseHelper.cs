@@ -76,6 +76,48 @@ namespace RestaurantManagementSystem
                         FOREIGN KEY(category_id) REFERENCES Categories(category_id)
                     );";
                 ExecuteQuery(connection, sqlMenu);
+
+                // 6. Create Recipes Table
+                // This table links MenuItems to Ingredients
+                string sqlRecipes = @"
+                    CREATE TABLE IF NOT EXISTS Recipes (
+                        recipe_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        menu_item_id INTEGER NOT NULL,
+                        ingredient_id INTEGER NOT NULL,
+                        quantity_required REAL NOT NULL,
+                        FOREIGN KEY(menu_item_id) REFERENCES MenuItems(menu_item_id),
+                        FOREIGN KEY(ingredient_id) REFERENCES Ingredients(ingredient_id)
+                    );";
+                ExecuteQuery(connection, sqlRecipes);
+
+                // 7. Create ProductionLogs Table (For "Mince to Patty" conversion)
+                string sqlProductionLogs = @"
+                    CREATE TABLE IF NOT EXISTS ProductionLogs (
+                        production_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        production_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    
+                        source_ingredient_id INTEGER NOT NULL,  -- What we used (e.g., Raw Mince)
+                        used_quantity REAL NOT NULL,            -- How much we used (e.g., 5 kg)
+    
+                        target_ingredient_id INTEGER NOT NULL,  -- What we made (e.g., Frozen Patty)
+                        produced_quantity REAL NOT NULL,        -- How much we got (e.g., 50 pcs)
+    
+                        FOREIGN KEY(source_ingredient_id) REFERENCES Ingredients(ingredient_id),
+                        FOREIGN KEY(target_ingredient_id) REFERENCES Ingredients(ingredient_id)
+                    );";
+                ExecuteQuery(connection, sqlProductionLogs);
+
+                // 8. Create StockAdjustments Table
+                string sqlStockAdjustments = @"
+                    CREATE TABLE IF NOT EXISTS StockAdjustments (
+                        adjustment_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        ingredient_id INTEGER NOT NULL,
+                        quantity_adjusted REAL NOT NULL,
+                        reason TEXT,
+                        adjustment_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY(ingredient_id) REFERENCES Ingredients(ingredient_id)
+                    );";
+                ExecuteQuery(connection, sqlStockAdjustments);
             }
         }
 

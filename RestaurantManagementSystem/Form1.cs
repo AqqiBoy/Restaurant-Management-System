@@ -14,12 +14,15 @@ namespace RestaurantManagementSystem
         private Button btnPurchases;
         private Button btnMenu;
         private Button btnCategories;
+        private Button btnRecipes;
+        private Button btnProduction;
+        private Button btnWastage;
 
         public Form1()
         {
             // 1. Setup the Main Window properties
             this.Text = "Restaurant Management System";
-            this.Size = new Size(600, 600);
+            this.Size = new Size(600, 800);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.BackColor = Color.WhiteSmoke; // Light gray background
 
@@ -89,11 +92,41 @@ namespace RestaurantManagementSystem
             btnMenu.Click += new EventHandler(OpenMenuForm);
             this.Controls.Add(btnMenu);
 
-            // --- Button 6: Exit ---
+            // --- Button 6: Manage Recipes ---
+            Button btnRecipes = new Button();
+            btnRecipes.Text = "Manage Recipes (Link Items)";
+            btnRecipes.Font = new Font("Segoe UI", 12, FontStyle.Regular);
+            btnRecipes.Location = new Point(150, 470); // Below Categories
+            btnRecipes.Size = new Size(300, 50);
+            btnRecipes.BackColor = Color.White;
+            btnRecipes.Click += new EventHandler(OpenRecipesForm);
+            this.Controls.Add(btnRecipes);
+
+            // --- Button 7: Kitchen Production ---
+            Button btnProduction = new Button();
+            btnProduction.Text = "Kitchen Production (Stock Conversion)";
+            btnProduction.Font = new Font("Segoe UI", 10, FontStyle.Regular); // Slightly smaller font to fit text
+            btnProduction.Location = new Point(150, 540); // Below Recipes
+            btnProduction.Size = new Size(300, 50);
+            btnProduction.BackColor = Color.White;
+            btnProduction.Click += new EventHandler(OpenProductionForm);
+            this.Controls.Add(btnProduction);
+
+            // --- Button 8: Wastage / Adjustments ---
+            Button btnWastage = new Button();
+            btnWastage.Text = "Stock Adjustment (Wastage)";
+            btnWastage.Font = new Font("Segoe UI", 10, FontStyle.Regular);
+            btnWastage.Location = new Point(150, 610); // Below Production Button
+            btnWastage.Size = new Size(300, 50);
+            btnWastage.BackColor = Color.White;
+            btnWastage.Click += new EventHandler(OpenWastageForm);
+            this.Controls.Add(btnWastage);
+
+            // --- Button 9: Exit ---
             btnExit = new Button();
             btnExit.Text = "Exit System";
             btnExit.Font = new Font("Segoe UI", 10, FontStyle.Regular);
-            btnExit.Location = new Point(150, 470);
+            btnExit.Location = new Point(150, 680);
             btnExit.Size = new Size(300, 40);
             btnExit.BackColor = Color.IndianRed; // Red color for exit
             btnExit.ForeColor = Color.White;
@@ -137,6 +170,24 @@ namespace RestaurantManagementSystem
         private void OpenMenuForm(object sender, EventArgs e)
         {
             MenuForm frm = new MenuForm();
+            frm.ShowDialog();
+        }
+
+        private void OpenRecipesForm(object sender, EventArgs e)
+        {
+            RecipesForm frm = new RecipesForm();
+            frm.ShowDialog();
+        }
+
+        private void OpenProductionForm(object sender, EventArgs e)
+        {
+            ProductionForm frm = new ProductionForm();
+            frm.ShowDialog();
+        }
+
+        private void OpenWastageForm(object sender, EventArgs e)
+        {
+            WastageForm frm = new WastageForm();
             frm.ShowDialog();
         }
     }
