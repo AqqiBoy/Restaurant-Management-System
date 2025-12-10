@@ -8,7 +8,7 @@ namespace RestaurantManagementSystem
     {
         // The file name of your database. It will be created in your Debug folder.
         private const string DatabaseFileName = "restaurant_db.sqlite";
-        private const string ConnectionString = "Data Source=" + DatabaseFileName + ";Version=3;";
+        public const string ConnectionString = "Data Source=" + DatabaseFileName + ";Version=3;";
 
         // Method to initialize the database (Create tables if they don't exist)
         public static void InitializeDatabase()

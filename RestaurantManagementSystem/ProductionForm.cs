@@ -8,28 +8,23 @@ namespace RestaurantManagementSystem
 {
     public partial class ProductionForm : Form
     {
-        // UI Controls
-        private GroupBox grpInput;
-        private Label lblSource;
-        private ComboBox cmbSource; // "Mutton Mince"
-        private Label lblUsedQty;
+        private Panel contentPanel;
+        private GroupBox grpInput, grpOutput;
+        private Label lblSource, lblUsedQty, lblSourceUnit;
+        private ComboBox cmbSource;
         private TextBox txtUsedQty;
-        private Label lblSourceUnit;
-
-        private GroupBox grpOutput;
-        private Label lblTarget;
-        private ComboBox cmbTarget; // "Frozen Kebab Patty"
-        private Label lblProducedQty;
+        private Label lblTarget, lblProducedQty, lblTargetUnit;
+        private ComboBox cmbTarget;
         private TextBox txtProducedQty;
-        private Label lblTargetUnit;
-
         private Button btnConvert;
         private DataGridView dgvHistory;
 
         public ProductionForm()
         {
             this.Text = "Kitchen Production (Pre-Cooking)";
-            this.Size = new Size(600, 700);
+            this.FormBorderStyle = FormBorderStyle.None;
+            this.BackColor = Color.WhiteSmoke;
+            this.Size = new Size(800, 700);
             this.StartPosition = FormStartPosition.CenterParent;
 
             InitializeLayout();
@@ -37,83 +32,195 @@ namespace RestaurantManagementSystem
             LoadProductionHistory();
         }
 
+        private void ProductionForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
         private void InitializeLayout()
         {
-            int x = 20; int y = 20;
+            // ---------- MAIN CONTENT PANEL ----------
+            contentPanel = new Panel();
+            contentPanel.Size = new Size(800, 550); // same as UnitsForm
+            contentPanel.BackColor = Color.WhiteSmoke;
+            contentPanel.Anchor = AnchorStyles.None;
+            this.Controls.Add(contentPanel);
 
-            // --- SECTION 1: INPUT (Raw Material) ---
-            grpInput = new GroupBox() { Text = "Step 1: Raw Material Used (Stock OUT)", Location = new Point(x, y), Size = new Size(540, 100) };
-            this.Controls.Add(grpInput);
+            int x = 20;
+            int y = 20;
 
-            lblSource = new Label() { Text = "Ingredient:", Location = new Point(20, 30), AutoSize = true };
+            // ---------- GROUPBOX: Raw Material Used ----------
+            grpInput = new GroupBox
+            {
+                Text = "Step 1: Raw Material Used (Stock OUT)",
+                Location = new Point(x, y),
+                Size = new Size(760, 100),
+                Font = new Font("Segoe UI", 10, FontStyle.Bold)
+            };
+            contentPanel.Controls.Add(grpInput);
+
+            lblSource = new Label
+            {
+                Text = "Ingredient:",
+                Location = new Point(20, 30),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 12, FontStyle.Regular)
+            };
             grpInput.Controls.Add(lblSource);
 
-            cmbSource = new ComboBox() { Location = new Point(20, 55), Width = 200, DropDownStyle = ComboBoxStyle.DropDownList };
+            cmbSource = new ComboBox
+            {
+                Location = new Point(20, 55),
+                Width = 300,
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Font = new Font("Segoe UI", 12, FontStyle.Regular)
+            };
             cmbSource.SelectedIndexChanged += (s, e) => UpdateUnitLabel(cmbSource, lblSourceUnit);
             grpInput.Controls.Add(cmbSource);
 
-            lblUsedQty = new Label() { Text = "Qty Used:", Location = new Point(240, 30), AutoSize = true };
+            lblUsedQty = new Label
+            {
+                Text = "Qty Used:",
+                Location = new Point(340, 30),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 12, FontStyle.Regular)
+            };
             grpInput.Controls.Add(lblUsedQty);
 
-            txtUsedQty = new TextBox() { Location = new Point(240, 55), Width = 100 };
+            txtUsedQty = new TextBox
+            {
+                Location = new Point(340, 55),
+                Width = 100,
+                Font = new Font("Segoe UI", 12, FontStyle.Regular)
+            };
             grpInput.Controls.Add(txtUsedQty);
 
-            lblSourceUnit = new Label() { Text = "...", Location = new Point(350, 58), AutoSize = true };
+            lblSourceUnit = new Label
+            {
+                Text = "...",
+                Location = new Point(450, 58),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 11, FontStyle.Italic)
+            };
             grpInput.Controls.Add(lblSourceUnit);
 
-            // --- SECTION 2: OUTPUT (Finished Product) ---
+            // ---------- GROUPBOX: Produced Item ----------
             y += 120;
-            grpOutput = new GroupBox() { Text = "Step 2: Produced Item (Stock IN)", Location = new Point(x, y), Size = new Size(540, 100) };
-            this.Controls.Add(grpOutput);
+            grpOutput = new GroupBox
+            {
+                Text = "Step 2: Produced Item (Stock IN)",
+                Location = new Point(x, y),
+                Size = new Size(760, 100),
+                Font = new Font("Segoe UI", 10, FontStyle.Bold)
+            };
+            contentPanel.Controls.Add(grpOutput);
 
-            lblTarget = new Label() { Text = "Item Made:", Location = new Point(20, 30), AutoSize = true };
+            lblTarget = new Label
+            {
+                Text = "Item Made:",
+                Location = new Point(20, 30),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 12, FontStyle.Regular)
+            };
             grpOutput.Controls.Add(lblTarget);
 
-            cmbTarget = new ComboBox() { Location = new Point(20, 55), Width = 200, DropDownStyle = ComboBoxStyle.DropDownList };
+            cmbTarget = new ComboBox
+            {
+                Location = new Point(20, 55),
+                Width = 300,
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Font = new Font("Segoe UI", 12, FontStyle.Regular)
+            };
             cmbTarget.SelectedIndexChanged += (s, e) => UpdateUnitLabel(cmbTarget, lblTargetUnit);
             grpOutput.Controls.Add(cmbTarget);
 
-            lblProducedQty = new Label() { Text = "Qty Made:", Location = new Point(240, 30), AutoSize = true };
+            lblProducedQty = new Label
+            {
+                Text = "Qty Made:",
+                Location = new Point(340, 30),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 12, FontStyle.Regular)
+            };
             grpOutput.Controls.Add(lblProducedQty);
 
-            txtProducedQty = new TextBox() { Location = new Point(240, 55), Width = 100 };
+            txtProducedQty = new TextBox
+            {
+                Location = new Point(340, 55),
+                Width = 100,
+                Font = new Font("Segoe UI", 12, FontStyle.Regular)
+            };
             grpOutput.Controls.Add(txtProducedQty);
 
-            lblTargetUnit = new Label() { Text = "...", Location = new Point(350, 58), AutoSize = true };
+            lblTargetUnit = new Label
+            {
+                Text = "...",
+                Location = new Point(450, 58),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 11, FontStyle.Italic)
+            };
             grpOutput.Controls.Add(lblTargetUnit);
 
-            // --- BUTTON ---
+            // ---------- BUTTON: Record Production ----------
             y += 120;
-            btnConvert = new Button() { Text = "Record Production", Location = new Point(x, y), Width = 200, Height = 40, BackColor = Color.LightGoldenrodYellow };
+            btnConvert = new Button
+            {
+                Text = "Record Production",
+                Location = new Point(x, y),
+                Width = 160,
+                Height = 35,
+                BackColor = Color.LightCoral,
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                FlatStyle = FlatStyle.Flat
+            };
+            btnConvert.FlatAppearance.BorderSize = 0;
             btnConvert.Click += BtnConvert_Click;
-            this.Controls.Add(btnConvert);
+            contentPanel.Controls.Add(btnConvert);
 
-            // --- HISTORY GRID ---
-            dgvHistory = new DataGridView();
-            dgvHistory.Location = new Point(20, y + 60);
-            dgvHistory.Size = new Size(540, 250);
-            dgvHistory.ReadOnly = true;
-            dgvHistory.AllowUserToAddRows = false;
-            dgvHistory.RowHeadersVisible = false;
-            dgvHistory.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            this.Controls.Add(dgvHistory);
+            // ---------- DATAGRIDVIEW: History ----------
+            dgvHistory = new DataGridView
+            {
+                Location = new Point(x, y + 60),
+                Size = new Size(760, 300), // same as UnitsForm
+                ReadOnly = true,
+                AllowUserToAddRows = false,
+                RowHeadersVisible = false,
+                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
+                Font = new Font("Segoe UI", 11, FontStyle.Regular)
+            };
+            dgvHistory.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+            dgvHistory.ColumnHeadersDefaultCellStyle.BackColor = Color.LightGray;
+            dgvHistory.EnableHeadersVisualStyles = false;
+            contentPanel.Controls.Add(dgvHistory);
+
+            // ---------- CENTER PANEL ON RESIZE ----------
+            this.Resize += (s, e) =>
+            {
+                contentPanel.Location = new Point(
+                    (this.Width - contentPanel.Width) / 2,
+                    (this.Height - contentPanel.Height) / 2
+                );
+            };
+
+            // Initial center
+            contentPanel.Location = new Point(
+                (this.Width - contentPanel.Width) / 2,
+                (this.Height - contentPanel.Height) / 2
+            );
         }
 
-        // --- DATABASE LOGIC ---
 
+        // ---------- DATABASE LOGIC ----------
         private void LoadIngredients()
         {
             using (var conn = new SQLiteConnection(DatabaseHelper.GetConnectionString()))
             {
                 conn.Open();
-                // Get Name, ID, and Unit Code
                 string sql = "SELECT i.ingredient_id, i.name, u.short_code FROM Ingredients i JOIN Units u ON i.unit_id = u.unit_id ORDER BY i.name";
                 using (var adapter = new SQLiteDataAdapter(sql, conn))
                 {
                     DataTable dt = new DataTable();
                     adapter.Fill(dt);
 
-                    // We need two separate copies of the data for two dropdowns
                     cmbSource.DataSource = dt.Copy();
                     cmbSource.DisplayMember = "name";
                     cmbSource.ValueMember = "ingredient_id";
@@ -125,7 +232,6 @@ namespace RestaurantManagementSystem
             }
         }
 
-        // Helper to show "kg" or "pcs" when user picks an item
         private void UpdateUnitLabel(ComboBox cmb, Label lbl)
         {
             if (cmb.SelectedIndex != -1 && cmb.SelectedItem is DataRowView row)
@@ -148,7 +254,6 @@ namespace RestaurantManagementSystem
                     JOIN Ingredients src ON p.source_ingredient_id = src.ingredient_id
                     JOIN Ingredients tgt ON p.target_ingredient_id = tgt.ingredient_id
                     ORDER BY p.production_id DESC";
-
                 using (var adapter = new SQLiteDataAdapter(sql, conn))
                 {
                     DataTable dt = new DataTable();
@@ -180,10 +285,6 @@ namespace RestaurantManagementSystem
                 {
                     try
                     {
-                        // 1. Check if we have enough Source Stock
-                        // (You can skip this if you want to allow negative stock, but it's safer to check)
-
-                        // 2. Subtract from Source (Mince) - ROUNDED to 3 decimal places
                         string sqlDed = "UPDATE Ingredients SET current_stock = ROUND(current_stock - @used, 1) WHERE ingredient_id = @id";
                         using (var cmd = new SQLiteCommand(sqlDed, conn))
                         {
@@ -192,7 +293,6 @@ namespace RestaurantManagementSystem
                             cmd.ExecuteNonQuery();
                         }
 
-                        // 3. Add to Target (Frozen Patties) - ROUNDED to 3 decimal places
                         string sqlAdd = "UPDATE Ingredients SET current_stock = ROUND(current_stock + @made, 1) WHERE ingredient_id = @id";
                         using (var cmd = new SQLiteCommand(sqlAdd, conn))
                         {
@@ -201,7 +301,6 @@ namespace RestaurantManagementSystem
                             cmd.ExecuteNonQuery();
                         }
 
-                        // 4. Log the record
                         string sqlLog = "INSERT INTO ProductionLogs (source_ingredient_id, used_quantity, target_ingredient_id, produced_quantity) VALUES (@sid, @uqty, @tid, @pqty)";
                         using (var cmd = new SQLiteCommand(sqlLog, conn))
                         {

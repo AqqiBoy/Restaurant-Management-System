@@ -8,23 +8,30 @@ namespace RestaurantManagementSystem
 {
     public partial class WastageForm : Form
     {
-        // UI Controls
+        private Panel contentPanel;
+
         private Label lblIngredient;
         private ComboBox cmbIngredients;
+
         private Label lblAction;
-        private ComboBox cmbAction; // "Remove (Wastage)" or "Add (Found)"
+        private ComboBox cmbAction;
+
         private Label lblQty;
         private TextBox txtQty;
         private Label lblUnit;
+
         private Label lblReason;
         private TextBox txtReason;
+
         private Button btnSave;
         private DataGridView dgvHistory;
 
         public WastageForm()
         {
             this.Text = "Stock Adjustment / Wastage";
-            this.Size = new Size(500, 600);
+            this.FormBorderStyle = FormBorderStyle.None;
+            this.BackColor = Color.WhiteSmoke;
+            this.Size = new Size(800, 600);
             this.StartPosition = FormStartPosition.CenterParent;
 
             InitializeLayout();
@@ -34,65 +41,160 @@ namespace RestaurantManagementSystem
 
         private void InitializeLayout()
         {
-            int x = 20; int y = 20;
+            // ---------- MAIN CONTENT PANEL ----------
+            contentPanel = new Panel();
+            contentPanel.Size = new Size(800, 550); // same as UnitsForm
+            contentPanel.BackColor = Color.WhiteSmoke;
+            contentPanel.Anchor = AnchorStyles.None;
+            this.Controls.Add(contentPanel);
 
-            // 1. Select Ingredient
-            lblIngredient = new Label() { Text = "Select Ingredient:", Location = new Point(x, y), AutoSize = true };
-            this.Controls.Add(lblIngredient);
+            int x = 20;
+            int y = 20;
 
-            cmbIngredients = new ComboBox() { Location = new Point(x, y + 25), Width = 250, DropDownStyle = ComboBoxStyle.DropDownList };
+            // ---------- LABEL: Select Ingredient ----------
+            lblIngredient = new Label
+            {
+                Text = "Select Ingredient:",
+                Location = new Point(x, y),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 12, FontStyle.Regular)
+            };
+            contentPanel.Controls.Add(lblIngredient);
+
+            // ---------- COMBOBOX: Ingredients ----------
+            cmbIngredients = new ComboBox
+            {
+                Location = new Point(x, y + 30),
+                Width = 300,
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Font = new Font("Segoe UI", 12, FontStyle.Regular)
+            };
             cmbIngredients.SelectedIndexChanged += (s, e) => UpdateUnitLabel();
-            this.Controls.Add(cmbIngredients);
+            contentPanel.Controls.Add(cmbIngredients);
 
-            // 2. Action (Add or Remove)
-            y += 60;
-            lblAction = new Label() { Text = "Action:", Location = new Point(x, y), AutoSize = true };
-            this.Controls.Add(lblAction);
+            // ---------- LABEL: Action ----------
+            y += 80;
+            lblAction = new Label
+            {
+                Text = "Action:",
+                Location = new Point(x, y),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 12, FontStyle.Regular)
+            };
+            contentPanel.Controls.Add(lblAction);
 
-            cmbAction = new ComboBox() { Location = new Point(x, y + 25), Width = 200, DropDownStyle = ComboBoxStyle.DropDownList };
+            // ---------- COMBOBOX: Action ----------
+            cmbAction = new ComboBox
+            {
+                Location = new Point(x, y + 30),
+                Width = 250,
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Font = new Font("Segoe UI", 12, FontStyle.Regular)
+            };
             cmbAction.Items.Add("Remove (Wastage / Spoilage)");
             cmbAction.Items.Add("Add (Correction / Found)");
-            cmbAction.SelectedIndex = 0; // Default to Remove
-            this.Controls.Add(cmbAction);
+            cmbAction.SelectedIndex = 0;
+            contentPanel.Controls.Add(cmbAction);
 
-            // 3. Quantity
-            y += 60;
-            lblQty = new Label() { Text = "Quantity:", Location = new Point(x, y), AutoSize = true };
-            this.Controls.Add(lblQty);
+            // ---------- LABEL: Quantity ----------
+            y += 80;
+            lblQty = new Label
+            {
+                Text = "Quantity:",
+                Location = new Point(x, y),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 12, FontStyle.Regular)
+            };
+            contentPanel.Controls.Add(lblQty);
 
-            txtQty = new TextBox() { Location = new Point(x, y + 25), Width = 100 };
-            this.Controls.Add(txtQty);
+            // ---------- TEXTBOX: Quantity ----------
+            txtQty = new TextBox
+            {
+                Location = new Point(x, y + 30),
+                Width = 100,
+                Font = new Font("Segoe UI", 12, FontStyle.Regular)
+            };
+            contentPanel.Controls.Add(txtQty);
 
-            lblUnit = new Label() { Text = "...", Location = new Point(x + 110, y + 28), AutoSize = true };
-            this.Controls.Add(lblUnit);
+            // ---------- LABEL: Unit ----------
+            lblUnit = new Label
+            {
+                Text = "...",
+                Location = new Point(x + 110, y + 33),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 11, FontStyle.Italic)
+            };
+            contentPanel.Controls.Add(lblUnit);
 
-            // 4. Reason
-            y += 60;
-            lblReason = new Label() { Text = "Reason (e.g. 'Fell on floor'):", Location = new Point(x, y), AutoSize = true };
-            this.Controls.Add(lblReason);
+            // ---------- LABEL: Reason ----------
+            y += 80;
+            lblReason = new Label
+            {
+                Text = "Reason (e.g. 'Fell on floor'):",
+                Location = new Point(x, y),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 12, FontStyle.Regular)
+            };
+            contentPanel.Controls.Add(lblReason);
 
-            txtReason = new TextBox() { Location = new Point(x, y + 25), Width = 250 };
-            this.Controls.Add(txtReason);
+            // ---------- TEXTBOX: Reason ----------
+            txtReason = new TextBox
+            {
+                Location = new Point(x, y + 30),
+                Width = 300,
+                Font = new Font("Segoe UI", 12, FontStyle.Regular)
+            };
+            contentPanel.Controls.Add(txtReason);
 
-            // 5. Save Button
-            y += 60;
-            btnSave = new Button() { Text = "Adjust Stock", Location = new Point(x, y), Width = 150, Height = 40, BackColor = Color.LightCoral };
+            // ---------- BUTTON: Adjust Stock ----------
+            y += 80;
+            btnSave = new Button
+            {
+                Text = "Adjust Stock",
+                Location = new Point(x, y),
+                Width = 160,
+                Height = 35,
+                BackColor = Color.LightCoral,
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                FlatStyle = FlatStyle.Flat
+            };
+            btnSave.FlatAppearance.BorderSize = 0;
             btnSave.Click += BtnSave_Click;
-            this.Controls.Add(btnSave);
+            contentPanel.Controls.Add(btnSave);
 
-            // 6. History Grid
-            dgvHistory = new DataGridView();
-            dgvHistory.Location = new Point(20, y + 60);
-            dgvHistory.Size = new Size(440, 200);
-            dgvHistory.ReadOnly = true;
-            dgvHistory.AllowUserToAddRows = false;
-            dgvHistory.RowHeadersVisible = false;
-            dgvHistory.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            this.Controls.Add(dgvHistory);
+            // ---------- DATAGRIDVIEW: History ----------
+            dgvHistory = new DataGridView
+            {
+                Location = new Point(x, y + 60),
+                Size = new Size(760, 300), // same width and height logic as UnitsForm
+                ReadOnly = true,
+                AllowUserToAddRows = false,
+                RowHeadersVisible = false,
+                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
+                Font = new Font("Segoe UI", 11, FontStyle.Regular)
+            };
+            dgvHistory.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+            dgvHistory.ColumnHeadersDefaultCellStyle.BackColor = Color.LightGray;
+            dgvHistory.EnableHeadersVisualStyles = false;
+            contentPanel.Controls.Add(dgvHistory);
+
+            // ---------- CENTER PANEL ON RESIZE ----------
+            this.Resize += (s, e) =>
+            {
+                contentPanel.Location = new Point(
+                    (this.Width - contentPanel.Width) / 2,
+                    (this.Height - contentPanel.Height) / 2
+                );
+            };
+
+            contentPanel.Location = new Point(
+                (this.Width - contentPanel.Width) / 2,
+                (this.Height - contentPanel.Height) / 2
+            );
         }
 
-        // --- DATABASE LOGIC ---
 
+        // ---------- DATABASE LOGIC ----------
         private void LoadIngredients()
         {
             using (var conn = new SQLiteConnection(DatabaseHelper.GetConnectionString()))
@@ -123,7 +225,6 @@ namespace RestaurantManagementSystem
             using (var conn = new SQLiteConnection(DatabaseHelper.GetConnectionString()))
             {
                 conn.Open();
-                // Show positive/negative quantity and reason
                 string sql = @"
                     SELECT 
                         s.adjustment_date, 
@@ -133,7 +234,6 @@ namespace RestaurantManagementSystem
                     FROM StockAdjustments s
                     JOIN Ingredients i ON s.ingredient_id = i.ingredient_id
                     ORDER BY s.adjustment_date DESC";
-
                 using (var adapter = new SQLiteDataAdapter(sql, conn))
                 {
                     DataTable dt = new DataTable();
@@ -156,9 +256,6 @@ namespace RestaurantManagementSystem
             }
 
             int ingId = Convert.ToInt32(cmbIngredients.SelectedValue);
-
-            // Determine if we are Adding (+) or Removing (-)
-            // Index 0 = Remove, Index 1 = Add
             double finalChange = (cmbAction.SelectedIndex == 0) ? -inputQty : inputQty;
 
             using (var conn = new SQLiteConnection(DatabaseHelper.GetConnectionString()))
@@ -168,7 +265,6 @@ namespace RestaurantManagementSystem
                 {
                     try
                     {
-                        // 1. Update Ingredient Stock (Using ROUND to prevent 7.300000007 errors)
                         string sqlUpdate = "UPDATE Ingredients SET current_stock = ROUND(current_stock + @change, 3) WHERE ingredient_id = @id";
                         using (var cmd = new SQLiteCommand(sqlUpdate, conn))
                         {
@@ -177,7 +273,6 @@ namespace RestaurantManagementSystem
                             cmd.ExecuteNonQuery();
                         }
 
-                        // 2. Log in StockAdjustments
                         string sqlLog = "INSERT INTO StockAdjustments (ingredient_id, quantity_adjusted, reason) VALUES (@id, @qty, @reason)";
                         using (var cmd = new SQLiteCommand(sqlLog, conn))
                         {
@@ -200,6 +295,11 @@ namespace RestaurantManagementSystem
                     }
                 }
             }
+        }
+
+        private void WastageForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

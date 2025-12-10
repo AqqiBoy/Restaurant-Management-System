@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Data;
 using System.Data.SQLite;
-using System.Drawing; // Needed for Point(x, y) and Size(width, height)
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace RestaurantManagementSystem
 {
     public partial class UnitsForm : Form
     {
-        // 1. Declare the Controls as class variables so we can access them everywhere
+        private Panel contentPanel;
         private Label lblName;
         private TextBox txtUnitName;
         private Label lblCode;
@@ -19,75 +19,107 @@ namespace RestaurantManagementSystem
 
         public UnitsForm()
         {
-            // Set up the Form's own properties
             this.Text = "Manage Units";
-            this.Size = new Size(400, 500);
+            this.FormBorderStyle = FormBorderStyle.None;
+            this.BackColor = Color.WhiteSmoke;
+            this.Size = new Size(800, 600);
             this.StartPosition = FormStartPosition.CenterParent;
-
-            // 2. Call our custom function to build the UI
             InitializeLayout();
-
-            // 3. Load data
             LoadUnits();
         }
 
         private void InitializeLayout()
         {
-            // --- 1. Label: Unit Name ---
+            // ---------- MAIN CONTENT PANEL ----------
+            contentPanel = new Panel();
+            contentPanel.Size = new Size(800, 550);
+            contentPanel.BackColor = Color.WhiteSmoke;
+            contentPanel.Anchor = AnchorStyles.None;
+            this.Controls.Add(contentPanel);
+
+            int x = 20;
+            int y = 20;
+
+            // ---------- LABEL: Unit Name ----------
             lblName = new Label();
             lblName.Text = "Unit Name:";
-            lblName.Location = new Point(20, 20); // X=20, Y=20
+            lblName.Location = new Point(x, y);
             lblName.AutoSize = true;
-            this.Controls.Add(lblName); // Add to the Form
+            lblName.Font = new Font("Segoe UI", 12, FontStyle.Regular);
+            contentPanel.Controls.Add(lblName);
 
-            // --- 2. TextBox: Unit Name ---
+            // ---------- TEXTBOX: Unit Name ----------
             txtUnitName = new TextBox();
-            txtUnitName.Location = new Point(20, 45);
-            txtUnitName.Width = 200;
-            this.Controls.Add(txtUnitName);
+            txtUnitName.Location = new Point(x, y + 30);
+            txtUnitName.Width = 300;
+            txtUnitName.Font = new Font("Segoe UI", 12, FontStyle.Regular);
+            contentPanel.Controls.Add(txtUnitName);
 
-            // --- 3. Label: Short Code ---
+            // ---------- LABEL: Short Code ----------
             lblCode = new Label();
             lblCode.Text = "Short Code (e.g. kg):";
-            lblCode.Location = new Point(20, 80);
+            lblCode.Location = new Point(x, y + 80);
             lblCode.AutoSize = true;
-            this.Controls.Add(lblCode);
+            lblCode.Font = new Font("Segoe UI", 12, FontStyle.Regular);
+            contentPanel.Controls.Add(lblCode);
 
-            // --- 4. TextBox: Short Code ---
+            // ---------- TEXTBOX: Short Code ----------
             txtShortCode = new TextBox();
-            txtShortCode.Location = new Point(20, 105);
-            txtShortCode.Width = 100;
-            this.Controls.Add(txtShortCode);
+            txtShortCode.Location = new Point(x, y + 110);
+            txtShortCode.Width = 150;
+            txtShortCode.Font = new Font("Segoe UI", 12, FontStyle.Regular);
+            contentPanel.Controls.Add(txtShortCode);
 
-            // --- 5. CheckBox: Allow Decimals ---
+            // ---------- CHECKBOX: Allow Decimals ----------
             chkAllowDecimal = new CheckBox();
             chkAllowDecimal.Text = "Allow Decimals?";
-            chkAllowDecimal.Location = new Point(150, 105);
+            chkAllowDecimal.Location = new Point(x + 180, y + 110);
             chkAllowDecimal.AutoSize = true;
-            this.Controls.Add(chkAllowDecimal);
+            chkAllowDecimal.Font = new Font("Segoe UI", 11, FontStyle.Regular);
+            contentPanel.Controls.Add(chkAllowDecimal);
 
-            // --- 6. Button: Save ---
+            // ---------- BUTTON: Save ----------
             btnSave = new Button();
             btnSave.Text = "Save Unit";
-            btnSave.Location = new Point(20, 150);
-            btnSave.Width = 100;
-            btnSave.Height = 30;
-            btnSave.BackColor = Color.LightBlue;
-            btnSave.Click += new EventHandler(btnSave_Click); // Connect the click event
-            this.Controls.Add(btnSave);
+            btnSave.Location = new Point(x, y + 160);
+            btnSave.Width = 160;
+            btnSave.Height = 35;
+            btnSave.BackColor = Color.LightCoral;
+            btnSave.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+            btnSave.FlatStyle = FlatStyle.Flat;
+            btnSave.FlatAppearance.BorderSize = 0;
+            btnSave.Click += btnSave_Click;
+            contentPanel.Controls.Add(btnSave);
 
-            // --- 7. DataGridView: The List ---
+            // ---------- DATAGRIDVIEW: Units ----------
             dgvUnits = new DataGridView();
-            dgvUnits.Location = new Point(20, 200);
-            dgvUnits.Size = new Size(340, 230); // Width, Height
-            dgvUnits.ReadOnly = true; // User cannot edit grid directly
-            dgvUnits.AllowUserToAddRows = false; // Hide the empty bottom row
-            dgvUnits.RowHeadersVisible = false; // Clean look
+            dgvUnits.Location = new Point(x, y + 220);
+            dgvUnits.Size = new Size(760, 300);
+            dgvUnits.ReadOnly = true;
+            dgvUnits.AllowUserToAddRows = false;
+            dgvUnits.RowHeadersVisible = false;
             dgvUnits.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            this.Controls.Add(dgvUnits);
-        }
+            dgvUnits.Font = new Font("Segoe UI", 11, FontStyle.Regular);
+            dgvUnits.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+            dgvUnits.ColumnHeadersDefaultCellStyle.BackColor = Color.LightGray;
+            dgvUnits.EnableHeadersVisualStyles = false;
+            contentPanel.Controls.Add(dgvUnits);
 
-        // --- DATABASE LOGIC (Same as before) ---
+            // ---------- CENTER CONTENT PANEL ON RESIZE ----------
+            this.Resize += (s, e) =>
+            {
+                contentPanel.Location = new Point(
+                    (this.Width - contentPanel.Width) / 2,
+                    (this.Height - contentPanel.Height) / 2
+                );
+            };
+
+            // Initial center
+            contentPanel.Location = new Point(
+                (this.Width - contentPanel.Width) / 2,
+                (this.Height - contentPanel.Height) / 2
+            );
+        }
 
         private void LoadUnits()
         {
@@ -130,7 +162,7 @@ namespace RestaurantManagementSystem
                         txtUnitName.Clear();
                         txtShortCode.Clear();
                         chkAllowDecimal.Checked = false;
-                        LoadUnits(); // Refresh grid
+                        LoadUnits();
                     }
                     catch (Exception ex)
                     {
@@ -138,6 +170,11 @@ namespace RestaurantManagementSystem
                     }
                 }
             }
+        }
+
+        private void UnitsForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

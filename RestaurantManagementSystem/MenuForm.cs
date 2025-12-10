@@ -8,65 +8,132 @@ namespace RestaurantManagementSystem
 {
     public partial class MenuForm : Form
     {
+        private Panel contentPanel;
         private Label lblName;
         private TextBox txtName;
         private Label lblPrice;
         private TextBox txtPrice;
         private Label lblCategory;
-        private ComboBox cmbCategory; // Now loaded from DB
+        private ComboBox cmbCategory;
         private Button btnSave;
         private DataGridView dgvMenu;
 
         public MenuForm()
         {
             this.Text = "Manage Menu Items";
-            this.Size = new Size(500, 600);
+            this.FormBorderStyle = FormBorderStyle.None;
+            this.BackColor = Color.WhiteSmoke;
+            this.Size = new Size(850, 600);
             this.StartPosition = FormStartPosition.CenterParent;
 
             InitializeLayout();
-            LoadCategoriesIntoDropdown(); // <--- This is new
+            LoadCategoriesIntoDropdown();
             LoadMenu();
         }
 
         private void InitializeLayout()
         {
-            int x = 20; int y = 20;
+            // ---------- MAIN CONTENT PANEL ----------
+            contentPanel = new Panel();
+            contentPanel.Size = new Size(800, 550);
+            contentPanel.BackColor = Color.WhiteSmoke;
+            this.Controls.Add(contentPanel);
 
-            lblName = new Label() { Text = "Item Name:", Location = new Point(x, y), AutoSize = true };
-            this.Controls.Add(lblName);
-            txtName = new TextBox() { Location = new Point(x, y + 25), Width = 250 };
-            this.Controls.Add(txtName);
+            int x = 20, y = 20;
 
-            y += 60;
-            lblPrice = new Label() { Text = "Selling Price:", Location = new Point(x, y), AutoSize = true };
-            this.Controls.Add(lblPrice);
-            txtPrice = new TextBox() { Location = new Point(x, y + 25), Width = 100 };
-            this.Controls.Add(txtPrice);
+            // ---------- LABEL: Item Name ----------
+            lblName = new Label();
+            lblName.Text = "Item Name:";
+            lblName.Location = new Point(x, y);
+            lblName.AutoSize = true;
+            lblName.Font = new Font("Segoe UI", 12, FontStyle.Regular);
+            contentPanel.Controls.Add(lblName);
 
-            y += 60;
-            lblCategory = new Label() { Text = "Category:", Location = new Point(x, y), AutoSize = true };
-            this.Controls.Add(lblCategory);
+            // ---------- TEXTBOX: Item Name ----------
+            txtName = new TextBox();
+            txtName.Location = new Point(x, y + 30);
+            txtName.Width = 300;
+            txtName.Font = new Font("Segoe UI", 12, FontStyle.Regular);
+            contentPanel.Controls.Add(txtName);
 
-            cmbCategory = new ComboBox() { Location = new Point(x, y + 25), Width = 200 };
+            // ---------- LABEL: Selling Price ----------
+            y += 70;
+            lblPrice = new Label();
+            lblPrice.Text = "Selling Price:";
+            lblPrice.Location = new Point(x, y);
+            lblPrice.AutoSize = true;
+            lblPrice.Font = new Font("Segoe UI", 12, FontStyle.Regular);
+            contentPanel.Controls.Add(lblPrice);
+
+            // ---------- TEXTBOX: Selling Price ----------
+            txtPrice = new TextBox();
+            txtPrice.Location = new Point(x, y + 30);
+            txtPrice.Width = 150;
+            txtPrice.Font = new Font("Segoe UI", 12, FontStyle.Regular);
+            contentPanel.Controls.Add(txtPrice);
+
+            // ---------- LABEL: Category ----------
+            y += 70;
+            lblCategory = new Label();
+            lblCategory.Text = "Category:";
+            lblCategory.Location = new Point(x, y);
+            lblCategory.AutoSize = true;
+            lblCategory.Font = new Font("Segoe UI", 12, FontStyle.Regular);
+            contentPanel.Controls.Add(lblCategory);
+
+            // ---------- COMBOBOX: Category ----------
+            cmbCategory = new ComboBox();
+            cmbCategory.Location = new Point(x, y + 30);
+            cmbCategory.Width = 250;
+            cmbCategory.Font = new Font("Segoe UI", 12, FontStyle.Regular);
             cmbCategory.DropDownStyle = ComboBoxStyle.DropDownList;
-            this.Controls.Add(cmbCategory);
+            contentPanel.Controls.Add(cmbCategory);
 
-            y += 60;
-            btnSave = new Button() { Text = "Add to Menu", Location = new Point(x, y), Width = 150, Height = 40, BackColor = Color.LightSalmon };
+            // ---------- BUTTON: Save ----------
+            y += 70;
+            btnSave = new Button();
+            btnSave.Text = "Add to Menu";
+            btnSave.Location = new Point(x, y);
+            btnSave.Width = 160;
+            btnSave.Height = 40;
+            btnSave.BackColor = Color.LightCoral;
+            btnSave.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+            btnSave.FlatStyle = FlatStyle.Flat;
+            btnSave.FlatAppearance.BorderSize = 0;
             btnSave.Click += BtnSave_Click;
-            this.Controls.Add(btnSave);
+            contentPanel.Controls.Add(btnSave);
 
+            // ---------- DATAGRIDVIEW: Menu ----------
             dgvMenu = new DataGridView();
-            dgvMenu.Location = new Point(20, y + 60);
-            dgvMenu.Size = new Size(440, 250);
+            dgvMenu.Location = new Point(x, y + 60);
+            dgvMenu.Size = new Size(760, 250);
             dgvMenu.ReadOnly = true;
             dgvMenu.AllowUserToAddRows = false;
             dgvMenu.RowHeadersVisible = false;
             dgvMenu.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            this.Controls.Add(dgvMenu);
+            dgvMenu.Font = new Font("Segoe UI", 11, FontStyle.Regular);
+            dgvMenu.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+            dgvMenu.ColumnHeadersDefaultCellStyle.BackColor = Color.LightGray;
+            dgvMenu.EnableHeadersVisualStyles = false;
+            contentPanel.Controls.Add(dgvMenu);
+
+            // ---------- CENTER CONTENT PANEL ON RESIZE ----------
+            this.Resize += (s, e) =>
+            {
+                contentPanel.Location = new Point(
+                    (this.Width - contentPanel.Width) / 2,
+                    (this.Height - contentPanel.Height) / 2
+                );
+            };
+
+            // Initial center
+            contentPanel.Location = new Point(
+                (this.Width - contentPanel.Width) / 2,
+                (this.Height - contentPanel.Height) / 2
+            );
         }
 
-        // NEW FUNCTION: Fetch categories from DB
+        // ---------- DATABASE LOGIC (unchanged) ----------
         private void LoadCategoriesIntoDropdown()
         {
             using (var conn = new SQLiteConnection(DatabaseHelper.GetConnectionString()))
@@ -88,7 +155,6 @@ namespace RestaurantManagementSystem
             using (var conn = new SQLiteConnection(DatabaseHelper.GetConnectionString()))
             {
                 conn.Open();
-                // Join with Categories table to show the name instead of ID
                 string sql = @"
                     SELECT m.name, m.price, c.name as Category 
                     FROM MenuItems m 
@@ -107,16 +173,20 @@ namespace RestaurantManagementSystem
         {
             if (string.IsNullOrWhiteSpace(txtName.Text) || cmbCategory.SelectedIndex == -1)
             {
-                MessageBox.Show("Missing Fields"); return;
+                MessageBox.Show("Please fill all fields.");
+                return;
             }
 
-            if (!decimal.TryParse(txtPrice.Text, out decimal price)) return;
+            if (!decimal.TryParse(txtPrice.Text, out decimal price))
+            {
+                MessageBox.Show("Invalid price.");
+                return;
+            }
 
             using (var conn = new SQLiteConnection(DatabaseHelper.GetConnectionString()))
             {
                 conn.Open();
                 string sql = "INSERT INTO MenuItems (name, price, category_id) VALUES (@name, @price, @catId)";
-
                 using (var cmd = new SQLiteCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("@name", txtName.Text.Trim());
@@ -126,13 +196,22 @@ namespace RestaurantManagementSystem
                     try
                     {
                         cmd.ExecuteNonQuery();
-                        MessageBox.Show("Saved!");
+                        MessageBox.Show("Menu item added successfully!");
                         txtName.Clear();
+                        txtPrice.Clear();
                         LoadMenu();
                     }
-                    catch (Exception ex) { MessageBox.Show("Error: " + ex.Message); }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error: " + ex.Message);
+                    }
                 }
             }
+        }
+
+        private void MenuForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

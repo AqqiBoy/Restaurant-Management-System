@@ -8,105 +8,166 @@ namespace RestaurantManagementSystem
 {
     public partial class PurchasesForm : Form
     {
-        // UI Controls
+        private Panel contentPanel;
         private Label lblIngredient;
-        private ComboBox cmbIngredients; // Dropdown to pick what we bought
+        private ComboBox cmbIngredients;
         private Label lblQty;
         private TextBox txtQty;
         private Label lblCost;
         private TextBox txtCost;
         private Label lblDate;
-        private DateTimePicker dtpDate; // Calendar picker
+        private DateTimePicker dtpDate;
         private Button btnSave;
-        private DataGridView dgvHistory; // Show recent purchases
+        private DataGridView dgvHistory;
 
         public PurchasesForm()
         {
             this.Text = "Record Purchase (Expense)";
-            this.Size = new Size(600, 600);
+            this.FormBorderStyle = FormBorderStyle.None;
+            this.BackColor = Color.WhiteSmoke;
+            this.Size = new Size(850, 600);
             this.StartPosition = FormStartPosition.CenterParent;
 
             InitializeLayout();
-
             LoadIngredientsDropdown();
             LoadPurchaseHistory();
         }
 
         private void InitializeLayout()
         {
+            // ---------- MAIN CONTENT PANEL ----------
+            contentPanel = new Panel();
+            contentPanel.Size = new Size(800, 550);
+            contentPanel.BackColor = Color.WhiteSmoke;
+            this.Controls.Add(contentPanel);
+
             int x = 20;
             int y = 20;
 
-            // 1. Ingredient Selector
-            lblIngredient = new Label() { Text = "Select Ingredient:", Location = new Point(x, y), AutoSize = true };
-            this.Controls.Add(lblIngredient);
+            // ---------- LABEL: Ingredient ----------
+            lblIngredient = new Label();
+            lblIngredient.Text = "Select Ingredient:";
+            lblIngredient.Location = new Point(x, y);
+            lblIngredient.AutoSize = true;
+            lblIngredient.Font = new Font("Segoe UI", 12, FontStyle.Regular);
+            contentPanel.Controls.Add(lblIngredient);
 
-            cmbIngredients = new ComboBox() { Location = new Point(x, y + 25), Width = 250 };
+            // ---------- COMBOBOX: Ingredients ----------
+            cmbIngredients = new ComboBox();
+            cmbIngredients.Location = new Point(x, y + 30);
+            cmbIngredients.Width = 300;
+            cmbIngredients.Font = new Font("Segoe UI", 12, FontStyle.Regular);
             cmbIngredients.DropDownStyle = ComboBoxStyle.DropDownList;
-            this.Controls.Add(cmbIngredients);
+            contentPanel.Controls.Add(cmbIngredients);
 
-            // 2. Quantity Input
-            y += 60;
-            lblQty = new Label() { Text = "Quantity Bought:", Location = new Point(x, y), AutoSize = true };
-            this.Controls.Add(lblQty);
+            // ---------- LABEL: Quantity ----------
+            y += 70;
+            lblQty = new Label();
+            lblQty.Text = "Quantity Bought:";
+            lblQty.Location = new Point(x, y);
+            lblQty.AutoSize = true;
+            lblQty.Font = new Font("Segoe UI", 12, FontStyle.Regular);
+            contentPanel.Controls.Add(lblQty);
 
-            txtQty = new TextBox() { Location = new Point(x, y + 25), Width = 100 };
-            this.Controls.Add(txtQty);
+            // ---------- TEXTBOX: Quantity ----------
+            txtQty = new TextBox();
+            txtQty.Location = new Point(x, y + 30);
+            txtQty.Width = 120;
+            txtQty.Font = new Font("Segoe UI", 12, FontStyle.Regular);
+            contentPanel.Controls.Add(txtQty);
 
-            // 3. Cost Input
-            // We put Cost next to Quantity to save space
-            lblCost = new Label() { Text = "Total Cost:", Location = new Point(x + 150, y), AutoSize = true };
-            this.Controls.Add(lblCost);
+            // ---------- LABEL: Cost ----------
+            lblCost = new Label();
+            lblCost.Text = "Total Cost:";
+            lblCost.Location = new Point(x + 200, y);
+            lblCost.AutoSize = true;
+            lblCost.Font = new Font("Segoe UI", 12, FontStyle.Regular);
+            contentPanel.Controls.Add(lblCost);
 
-            txtCost = new TextBox() { Location = new Point(x + 150, y + 25), Width = 100 };
-            this.Controls.Add(txtCost);
+            // ---------- TEXTBOX: Cost ----------
+            txtCost = new TextBox();
+            txtCost.Location = new Point(x + 200, y + 30);
+            txtCost.Width = 120;
+            txtCost.Font = new Font("Segoe UI", 12, FontStyle.Regular);
+            contentPanel.Controls.Add(txtCost);
 
-            // 4. Date Picker
-            y += 60;
-            lblDate = new Label() { Text = "Purchase Date:", Location = new Point(x, y), AutoSize = true };
-            this.Controls.Add(lblDate);
+            // ---------- LABEL: Date ----------
+            y += 70;
+            lblDate = new Label();
+            lblDate.Text = "Purchase Date:";
+            lblDate.Location = new Point(x, y);
+            lblDate.AutoSize = true;
+            lblDate.Font = new Font("Segoe UI", 12, FontStyle.Regular);
+            contentPanel.Controls.Add(lblDate);
 
-            dtpDate = new DateTimePicker() { Location = new Point(x, y + 25), Width = 250, Format = DateTimePickerFormat.Short };
-            this.Controls.Add(dtpDate);
+            // ---------- DATEPICKER ----------
+            dtpDate = new DateTimePicker();
+            dtpDate.Location = new Point(x, y + 30);
+            dtpDate.Width = 200;
+            dtpDate.Font = new Font("Segoe UI", 12, FontStyle.Regular);
+            dtpDate.Format = DateTimePickerFormat.Short;
+            contentPanel.Controls.Add(dtpDate);
 
-            // 5. Save Button
-            y += 60;
-            btnSave = new Button() { Text = "Save Purchase", Location = new Point(x, y), Width = 150, Height = 40, BackColor = Color.LightSkyBlue };
-            btnSave.Click += new EventHandler(btnSave_Click);
-            this.Controls.Add(btnSave);
+            // ---------- BUTTON: Save ----------
+            y += 70;
+            btnSave = new Button();
+            btnSave.Text = "Save Purchase";
+            btnSave.Location = new Point(x, y);
+            btnSave.Width = 160;
+            btnSave.Height = 40;
+            btnSave.BackColor = Color.LightCoral;
+            btnSave.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+            btnSave.FlatStyle = FlatStyle.Flat;
+            btnSave.FlatAppearance.BorderSize = 0;
+            btnSave.Click += btnSave_Click;
+            contentPanel.Controls.Add(btnSave);
 
-            // 6. History Grid
+            // ---------- DATAGRIDVIEW: Purchase History ----------
             dgvHistory = new DataGridView();
-            dgvHistory.Location = new Point(20, y + 60);
-            dgvHistory.Size = new Size(540, 250);
+            dgvHistory.Location = new Point(x, y + 60);
+            dgvHistory.Size = new Size(760, 250);
             dgvHistory.ReadOnly = true;
             dgvHistory.AllowUserToAddRows = false;
             dgvHistory.RowHeadersVisible = false;
             dgvHistory.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            this.Controls.Add(dgvHistory);
+            dgvHistory.Font = new Font("Segoe UI", 11, FontStyle.Regular);
+            dgvHistory.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+            dgvHistory.ColumnHeadersDefaultCellStyle.BackColor = Color.LightGray;
+            dgvHistory.EnableHeadersVisualStyles = false;
+            contentPanel.Controls.Add(dgvHistory);
+
+            // ---------- CENTER PANEL ON RESIZE ----------
+            this.Resize += (s, e) =>
+            {
+                contentPanel.Location = new Point(
+                    (this.Width - contentPanel.Width) / 2,
+                    (this.Height - contentPanel.Height) / 2
+                );
+            };
+
+            contentPanel.Location = new Point(
+                (this.Width - contentPanel.Width) / 2,
+                (this.Height - contentPanel.Height) / 2
+            );
         }
 
-        // --- DATABASE LOGIC ---
-
+        // ---------- DATABASE LOGIC (unchanged) ----------
         private void LoadIngredientsDropdown()
         {
             using (var conn = new SQLiteConnection(DatabaseHelper.GetConnectionString()))
             {
                 conn.Open();
-                // We display "Raw Chicken (kg)" so the user knows the unit
                 string sql = @"
                     SELECT i.ingredient_id, i.name || ' (' || u.short_code || ')' as DisplayName 
                     FROM Ingredients i
                     JOIN Units u ON i.unit_id = u.unit_id";
-
                 using (var adapter = new SQLiteDataAdapter(sql, conn))
                 {
                     DataTable dt = new DataTable();
                     adapter.Fill(dt);
-
                     cmbIngredients.DataSource = dt;
-                    cmbIngredients.DisplayMember = "DisplayName"; // Shows "Chicken (kg)"
-                    cmbIngredients.ValueMember = "ingredient_id"; // Stores ID 101
+                    cmbIngredients.DisplayMember = "DisplayName";
+                    cmbIngredients.ValueMember = "ingredient_id";
                 }
             }
         }
@@ -125,7 +186,6 @@ namespace RestaurantManagementSystem
                     FROM Purchases p
                     JOIN Ingredients i ON p.ingredient_id = i.ingredient_id
                     ORDER BY p.purchase_date DESC";
-
                 using (var adapter = new SQLiteDataAdapter(sql, conn))
                 {
                     DataTable dt = new DataTable();
@@ -137,7 +197,6 @@ namespace RestaurantManagementSystem
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            // Validation
             if (cmbIngredients.SelectedIndex == -1) { MessageBox.Show("Select an ingredient."); return; }
             if (!double.TryParse(txtQty.Text, out double qty)) { MessageBox.Show("Invalid Quantity."); return; }
             if (!decimal.TryParse(txtCost.Text, out decimal cost)) { MessageBox.Show("Invalid Cost."); return; }
@@ -147,17 +206,13 @@ namespace RestaurantManagementSystem
             using (var conn = new SQLiteConnection(DatabaseHelper.GetConnectionString()))
             {
                 conn.Open();
-
-                // Start a Transaction (Safety: Ensure both Expense AND Stock update happen together)
                 using (var transaction = conn.BeginTransaction())
                 {
                     try
                     {
-                        // 1. Insert into Purchases Table
                         string sqlPurchase = @"
                             INSERT INTO Purchases (ingredient_id, quantity, total_cost, purchase_date) 
                             VALUES (@id, @qty, @cost, @date)";
-
                         using (var cmd = new SQLiteCommand(sqlPurchase, conn))
                         {
                             cmd.Parameters.AddWithValue("@id", ingredientId);
@@ -167,9 +222,7 @@ namespace RestaurantManagementSystem
                             cmd.ExecuteNonQuery();
                         }
 
-                        // 2. Update Stock in Ingredients Table
                         string sqlUpdateStock = "UPDATE Ingredients SET current_stock = current_stock + @qty WHERE ingredient_id = @id";
-
                         using (var cmd = new SQLiteCommand(sqlUpdateStock, conn))
                         {
                             cmd.Parameters.AddWithValue("@qty", qty);
@@ -177,22 +230,24 @@ namespace RestaurantManagementSystem
                             cmd.ExecuteNonQuery();
                         }
 
-                        // Save Changes
                         transaction.Commit();
                         MessageBox.Show("Purchase Saved & Stock Updated!");
-
-                        // Clear Inputs
                         txtQty.Clear();
                         txtCost.Clear();
                         LoadPurchaseHistory();
                     }
                     catch (Exception ex)
                     {
-                        transaction.Rollback(); // Undo if error
+                        transaction.Rollback();
                         MessageBox.Show("Error: " + ex.Message);
                     }
                 }
             }
+        }
+
+        private void PurchasesForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

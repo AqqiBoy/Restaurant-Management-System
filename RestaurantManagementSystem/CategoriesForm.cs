@@ -8,6 +8,7 @@ namespace RestaurantManagementSystem
 {
     public partial class CategoriesForm : Form
     {
+        private Panel contentPanel;
         private Label lblName;
         private TextBox txtName;
         private Button btnSave;
@@ -16,7 +17,9 @@ namespace RestaurantManagementSystem
         public CategoriesForm()
         {
             this.Text = "Manage Food Categories";
-            this.Size = new Size(400, 500);
+            this.FormBorderStyle = FormBorderStyle.None;
+            this.BackColor = Color.WhiteSmoke;
+            this.Size = new Size(800, 600);
             this.StartPosition = FormStartPosition.CenterParent;
 
             InitializeLayout();
@@ -25,26 +28,75 @@ namespace RestaurantManagementSystem
 
         private void InitializeLayout()
         {
-            lblName = new Label() { Text = "Category Name:", Location = new Point(20, 20), AutoSize = true };
-            this.Controls.Add(lblName);
+            // ---------- MAIN CONTENT PANEL ----------
+            contentPanel = new Panel();
+            contentPanel.Size = new Size(800, 550); // Match UnitsForm
+            contentPanel.BackColor = Color.WhiteSmoke;
+            contentPanel.Anchor = AnchorStyles.None;
+            this.Controls.Add(contentPanel);
 
-            txtName = new TextBox() { Location = new Point(20, 45), Width = 250 };
-            this.Controls.Add(txtName);
+            int x = 20;
+            int y = 20;
 
-            btnSave = new Button() { Text = "Save Category", Location = new Point(20, 80), Width = 120, BackColor = Color.LightYellow };
+            // ---------- LABEL: Category Name ----------
+            lblName = new Label();
+            lblName.Text = "Category Name:";
+            lblName.Location = new Point(x, y);
+            lblName.AutoSize = true;
+            lblName.Font = new Font("Segoe UI", 12, FontStyle.Regular);
+            contentPanel.Controls.Add(lblName);
+
+            // ---------- TEXTBOX: Category Name ----------
+            txtName = new TextBox();
+            txtName.Location = new Point(x, y + 30);
+            txtName.Width = 300;
+            txtName.Font = new Font("Segoe UI", 12, FontStyle.Regular);
+            contentPanel.Controls.Add(txtName);
+
+            // ---------- BUTTON: Save ----------
+            btnSave = new Button();
+            btnSave.Text = "Save Category";
+            btnSave.Location = new Point(x, y + 80);
+            btnSave.Width = 160;
+            btnSave.Height = 35;
+            btnSave.BackColor = Color.LightCoral;
+            btnSave.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+            btnSave.FlatStyle = FlatStyle.Flat;
+            btnSave.FlatAppearance.BorderSize = 0;
             btnSave.Click += BtnSave_Click;
-            this.Controls.Add(btnSave);
+            contentPanel.Controls.Add(btnSave);
 
+            // ---------- DATAGRIDVIEW: Categories ----------
             dgvCategories = new DataGridView();
-            dgvCategories.Location = new Point(20, 130);
-            dgvCategories.Size = new Size(340, 300);
+            dgvCategories.Location = new Point(x, y + 140);
+            dgvCategories.Size = new Size(760, 350); // Match UnitsForm size
             dgvCategories.ReadOnly = true;
             dgvCategories.AllowUserToAddRows = false;
             dgvCategories.RowHeadersVisible = false;
             dgvCategories.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            this.Controls.Add(dgvCategories);
+            dgvCategories.Font = new Font("Segoe UI", 11, FontStyle.Regular);
+            dgvCategories.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+            dgvCategories.ColumnHeadersDefaultCellStyle.BackColor = Color.LightGray;
+            dgvCategories.EnableHeadersVisualStyles = false;
+            contentPanel.Controls.Add(dgvCategories);
+
+            // ---------- CENTER CONTENT PANEL ON RESIZE ----------
+            this.Resize += (s, e) =>
+            {
+                contentPanel.Location = new Point(
+                    (this.Width - contentPanel.Width) / 2,
+                    (this.Height - contentPanel.Height) / 2
+                );
+            };
+
+            // Initial center
+            contentPanel.Location = new Point(
+                (this.Width - contentPanel.Width) / 2,
+                (this.Height - contentPanel.Height) / 2
+            );
         }
 
+        // ---------- DATABASE LOGIC (UNCHANGED) ----------
         private void LoadCategories()
         {
             using (var conn = new SQLiteConnection(DatabaseHelper.GetConnectionString()))
@@ -78,6 +130,11 @@ namespace RestaurantManagementSystem
                     catch (Exception ex) { MessageBox.Show("Error: " + ex.Message); }
                 }
             }
+        }
+
+        private void CategoriesForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
