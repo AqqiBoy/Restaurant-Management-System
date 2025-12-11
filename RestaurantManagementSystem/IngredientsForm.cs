@@ -35,6 +35,10 @@ namespace RestaurantManagementSystem
 
         private void InitializeLayout()
         {
+
+            this.Dock = DockStyle.Fill; // Allow it to stretch
+            this.BackColor = Color.White; // Ensure background matches
+
             int x = 20;
             int y = 20;
 
@@ -71,7 +75,9 @@ namespace RestaurantManagementSystem
             // 5. Data Grid (The List)
             dgvIngredients = new DataGridView();
             dgvIngredients.Location = new Point(20, y + 50);
-            dgvIngredients.Size = new Size(440, 250);
+            // This tells the grid to stretch right and down as the form grows
+            dgvIngredients.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
+
             dgvIngredients.ReadOnly = true;
             dgvIngredients.AllowUserToAddRows = false;
             dgvIngredients.RowHeadersVisible = false;

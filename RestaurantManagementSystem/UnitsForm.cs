@@ -33,6 +33,10 @@ namespace RestaurantManagementSystem
 
         private void InitializeLayout()
         {
+
+            this.Dock = DockStyle.Fill; // Allow it to stretch
+            this.BackColor = Color.White; // Ensure background matches
+
             // --- 1. Label: Unit Name ---
             lblName = new Label();
             lblName.Text = "Unit Name:";
@@ -79,10 +83,12 @@ namespace RestaurantManagementSystem
             // --- 7. DataGridView: The List ---
             dgvUnits = new DataGridView();
             dgvUnits.Location = new Point(20, 200);
-            dgvUnits.Size = new Size(340, 230); // Width, Height
-            dgvUnits.ReadOnly = true; // User cannot edit grid directly
-            dgvUnits.AllowUserToAddRows = false; // Hide the empty bottom row
-            dgvUnits.RowHeadersVisible = false; // Clean look
+            // This tells the grid to stretch right and down as the form grows
+            dgvUnits.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
+
+            dgvUnits.ReadOnly = true;
+            dgvUnits.AllowUserToAddRows = false;
+            dgvUnits.RowHeadersVisible = false;
             dgvUnits.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             this.Controls.Add(dgvUnits);
         }

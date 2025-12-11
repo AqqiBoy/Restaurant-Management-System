@@ -34,6 +34,10 @@ namespace RestaurantManagementSystem
 
         private void InitializeLayout()
         {
+
+            this.Dock = DockStyle.Fill; // Allow it to stretch
+            this.BackColor = Color.White; // Ensure background matches
+
             int x = 20; int y = 20;
 
             // 1. Select Ingredient
@@ -83,7 +87,9 @@ namespace RestaurantManagementSystem
             // 6. History Grid
             dgvHistory = new DataGridView();
             dgvHistory.Location = new Point(20, y + 60);
-            dgvHistory.Size = new Size(440, 200);
+            // This tells the grid to stretch right and down as the form grows
+            dgvHistory.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
+
             dgvHistory.ReadOnly = true;
             dgvHistory.AllowUserToAddRows = false;
             dgvHistory.RowHeadersVisible = false;

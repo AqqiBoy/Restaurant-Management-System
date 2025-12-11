@@ -1,194 +1,229 @@
 ﻿using System;
-using System.Drawing; // For Size, Point, Color, Font
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace RestaurantManagementSystem
 {
     public partial class Form1 : Form
     {
-        // Define controls
-        private Label lblTitle;
-        private Button btnUnits;
-        private Button btnIngredients;
-        private Button btnExit;
-        private Button btnPurchases;
-        private Button btnMenu;
-        private Button btnCategories;
-        private Button btnRecipes;
-        private Button btnProduction;
-        private Button btnWastage;
+        // Layout Panels
+        private Panel panelSidebar;
+        private Panel panelHeader;
+        private Panel panelContent;
+        private Panel panelLogo; // Top-left corner box
+
+        // To track the current form open inside the panel
+        private Form activeForm = null;
 
         public Form1()
         {
-            // 1. Setup the Main Window properties
+            // Main Window Settings
             this.Text = "Restaurant Management System";
-            this.Size = new Size(600, 800);
+            this.WindowState = FormWindowState.Maximized; // Full Screen
+            this.FormBorderStyle = FormBorderStyle.None;
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.BackColor = Color.WhiteSmoke; // Light gray background
+            this.BackColor = Color.White;
 
-            // 2. Build the UI
-            InitializeDashboard();
+            // Build the Layout
+            InitializeDashboardLayout();
         }
 
-        private void InitializeDashboard()
+        private void InitializeDashboardLayout()
         {
-            // --- Title Label ---
-            lblTitle = new Label();
-            lblTitle.Text = "Restaurant Dashboard";
-            lblTitle.Font = new Font("Segoe UI", 20, FontStyle.Bold); // Big bold text
-            lblTitle.AutoSize = true;
-            lblTitle.Location = new Point(147, 40); // Centered-ish
-            lblTitle.ForeColor = Color.DarkSlateGray;
-            this.Controls.Add(lblTitle);
+            panelSidebar = new Panel();
+            panelSidebar.Dock = DockStyle.Left;
+            panelSidebar.Width = 260; // Narrow, as requested
+            panelSidebar.BackColor = Color.WhiteSmoke;
+            this.Controls.Add(panelSidebar);
 
-            // --- Button 1: Manage Units ---
-            btnUnits = new Button();
-            btnUnits.Text = "Manage Units";
-            btnUnits.Font = new Font("Segoe UI", 12, FontStyle.Regular);
-            btnUnits.Location = new Point(150, 120);
-            btnUnits.Size = new Size(300, 50); // Wide button
-            btnUnits.BackColor = Color.White;
-            btnUnits.Click += new EventHandler(OpenUnitsForm); // Link to function below
-            this.Controls.Add(btnUnits);
+            // 2. Logo Panel (Top Left inside Sidebar)
+            panelLogo = new Panel();
+            panelLogo.Dock = DockStyle.Top;
+            panelLogo.Height = 100;
+            panelLogo.BackColor = Color.WhiteSmoke;
+            // Add a Label for App Name
+            Label lblName = new Label();
+            lblName.Text = "RESTAURANT\nMANAGER"; // \n for new line
+            lblName.ForeColor = Color.Black;
+            lblName.Font = new Font("Segoe UI", 14, FontStyle.Bold);
+            lblName.TextAlign = ContentAlignment.MiddleCenter;
+            lblName.Dock = DockStyle.Fill;
+            panelLogo.Controls.Add(lblName);
+            panelSidebar.Controls.Add(panelLogo);
 
-            // --- Button 2: Manage Categories ---
-            Button btnCategories = new Button();
-            btnCategories.Text = "Manage Categories";
-            btnCategories.Font = new Font("Segoe UI", 12, FontStyle.Regular);
-            btnCategories.Location = new Point(150, 330); // Put this below Menu Button
-            btnCategories.Size = new Size(300, 50);
-            btnCategories.BackColor = Color.White;
-            btnCategories.Click += new EventHandler(OpenCategoriesForm);
-            this.Controls.Add(btnCategories);
+            // 3. Header Panel (Top) - Light/Color Theme
+            panelHeader = new Panel();
+            panelHeader.Dock = DockStyle.Top;
+            panelHeader.Height = 80;
+            panelHeader.BackColor = Color.WhiteSmoke;
+            this.Controls.Add(panelHeader);
 
-            // --- Button 3: Manage Ingredients (Placeholder for now) ---
-            // We will enable this fully when you paste the IngredientsForm code later
-            btnIngredients = new Button();
-            btnIngredients.Text = "Manage Ingredients";
-            btnIngredients.Font = new Font("Segoe UI", 12, FontStyle.Regular);
-            btnIngredients.Location = new Point(150, 190); // 70px lower
-            btnIngredients.Size = new Size(300, 50);
-            btnIngredients.BackColor = Color.White;
-            btnIngredients.Click += new EventHandler(OpenIngredientsForm);
-            this.Controls.Add(btnIngredients);
+            // 4. Content Panel (The middle empty space)
+            panelContent = new Panel();
+            panelContent.Dock = DockStyle.Fill;
+            panelContent.BackColor = Color.White;
+            // Background Image or Welcome Text could go here
+            Label lblWelcome = new Label();
+            lblWelcome.Text = "Welcome to Dashboard";
+            lblWelcome.Font = new Font("Segoe UI", 24, FontStyle.Regular);
+            lblWelcome.ForeColor = Color.LightGray;
+            lblWelcome.AutoSize = true;
+            lblWelcome.Location = new Point(50, 50);
+            panelContent.Controls.Add(lblWelcome);
 
-            // --- Button 4: Record Purchase ---
-            btnPurchases = new Button();
-            btnPurchases.Text = "Record Expense (Purchase)";
-            btnPurchases.Font = new Font("Segoe UI", 12, FontStyle.Regular);
-            btnPurchases.Location = new Point(150, 260); // Lower down
-            btnPurchases.Size = new Size(300, 50);
-            btnPurchases.BackColor = Color.White;
-            btnPurchases.Click += new EventHandler(OpenPurchasesForm);
-            this.Controls.Add(btnPurchases);
+            this.Controls.Add(panelContent);
+            panelContent.BringToFront(); // Ensure it sits correctly between side and top
 
-            // --- Button 5: Manage Menu ---
-            btnMenu = new Button();
-            btnMenu.Text = "Manage Menu Items";
-            btnMenu.Font = new Font("Segoe UI", 12, FontStyle.Regular);
-            btnMenu.Location = new Point(150, 400); // Lower down
-            btnMenu.Size = new Size(300, 50);
-            btnMenu.BackColor = Color.White;
-            btnMenu.Click += new EventHandler(OpenMenuForm);
-            this.Controls.Add(btnMenu);
+            // --- ADD BUTTONS ---
+            AddSidebarButtons();
+            AddHeaderButtons();
+        }
 
-            // --- Button 6: Manage Recipes ---
-            Button btnRecipes = new Button();
-            btnRecipes.Text = "Manage Recipes (Link Items)";
-            btnRecipes.Font = new Font("Segoe UI", 12, FontStyle.Regular);
-            btnRecipes.Location = new Point(150, 470); // Below Categories
-            btnRecipes.Size = new Size(300, 50);
-            btnRecipes.BackColor = Color.White;
-            btnRecipes.Click += new EventHandler(OpenRecipesForm);
-            this.Controls.Add(btnRecipes);
+        // --- SECTION A: SIDEBAR BUTTONS (Setup & Admin) ---
+        private void AddSidebarButtons()
+        {
+            
+            // 1. Units
+            CreateSidebarButton("Units Setup", (s, e) => OpenChildForm(new UnitsForm()));
+            // 2. Ingredients
+            CreateSidebarButton("Ingredients List", (s, e) => OpenChildForm(new IngredientsForm()));
+            // 3. Purchases
+            CreateSidebarButton("Record Purchase", (s, e) => OpenChildForm(new PurchasesForm()));
+            // 4. Production
+            CreateSidebarButton("Kitchen Production", (s, e) => OpenChildForm(new ProductionForm()));
+            // 5. Categories
+            CreateSidebarButton("Food Categories", (s, e) => OpenChildForm(new CategoriesForm()));
+            // 6. Menu Items
+            CreateSidebarButton("Menu Items", (s, e) => OpenChildForm(new MenuForm()));
+            // 7. Recipes
+            CreateSidebarButton("Manage Recipes", (s, e) => OpenChildForm(new RecipesForm()));
+            // 8. Wastage
+            CreateSidebarButton("Stock Wastage", (s, e) => OpenChildForm(new WastageForm()));
 
-            // --- Button 7: Kitchen Production ---
-            Button btnProduction = new Button();
-            btnProduction.Text = "Kitchen Production (Stock Conversion)";
-            btnProduction.Font = new Font("Segoe UI", 10, FontStyle.Regular); // Slightly smaller font to fit text
-            btnProduction.Location = new Point(150, 540); // Below Recipes
-            btnProduction.Size = new Size(300, 50);
-            btnProduction.BackColor = Color.White;
-            btnProduction.Click += new EventHandler(OpenProductionForm);
-            this.Controls.Add(btnProduction);
+            // Label for Section
+            Label lblSetup = new Label() { Text = "  BACK OFFICE SETUP", ForeColor = Color.Gray, Dock = DockStyle.Top, Height = 30, TextAlign = ContentAlignment.BottomLeft, Font = new Font("Segoe UI", 8, FontStyle.Bold) };
+            panelSidebar.Controls.Add(lblSetup);
+        }
 
-            // --- Button 8: Wastage / Adjustments ---
-            Button btnWastage = new Button();
-            btnWastage.Text = "Stock Adjustment (Wastage)";
-            btnWastage.Font = new Font("Segoe UI", 10, FontStyle.Regular);
-            btnWastage.Location = new Point(150, 610); // Below Production Button
-            btnWastage.Size = new Size(300, 50);
-            btnWastage.BackColor = Color.White;
-            btnWastage.Click += new EventHandler(OpenWastageForm);
-            this.Controls.Add(btnWastage);
+        // --- SECTION B: HEADER BUTTONS (Operations) ---
+        private void AddHeaderButtons()
+        {
+            // We flow these from Left to Right
+            int btnWidth = 120;
+            int btnHeight = 60;
+            int spacing = 10;
+            int startX = 20;
+            int startY = 10;
 
-            // --- Button 9: Exit ---
-            btnExit = new Button();
-            btnExit.Text = "Exit System";
-            btnExit.Font = new Font("Segoe UI", 10, FontStyle.Regular);
-            btnExit.Location = new Point(150, 680);
-            btnExit.Size = new Size(300, 40);
-            btnExit.BackColor = Color.IndianRed; // Red color for exit
+            // 1. Dashboard (Home)
+            CreateHeaderButton("Dashboard", Color.DarkSlateBlue, startX, startY, (s, e) => {
+                if (activeForm != null) activeForm.Close(); // Close any open form
+            });
+
+            // 2. Dine In (POS)
+            startX += btnWidth + spacing;
+            CreateHeaderButton("Dine In", Color.Crimson, startX, startY, (s, e) => MessageBox.Show("Dine In Module Coming Soon"));
+
+            // 3. Take Away
+            startX += btnWidth + spacing;
+            CreateHeaderButton("Take Away", Color.Orange, startX, startY, (s, e) => MessageBox.Show("Take Away Module Coming Soon"));
+
+            // 4. Delivery
+            startX += btnWidth + spacing;
+            CreateHeaderButton("Delivery", Color.Teal, startX, startY, (s, e) => MessageBox.Show("Delivery Module Coming Soon"));
+
+            // 5. Reports
+            startX += btnWidth + spacing;
+            CreateHeaderButton("Reports", Color.SeaGreen, startX, startY, (s, e) => MessageBox.Show("Reports Coming Soon"));
+
+            // Exit Button (Far Right)
+            Button btnExit = new Button();
+            btnExit.Text = "X";
+            btnExit.Size = new Size(40, 40);
+            btnExit.Location = new Point(Screen.PrimaryScreen.Bounds.Width - 320, 20); // Anchor right
+            btnExit.FlatStyle = FlatStyle.Flat;
+            btnExit.FlatAppearance.BorderSize = 0;
+            btnExit.BackColor = Color.IndianRed;
             btnExit.ForeColor = Color.White;
-            btnExit.Click += (s, e) => { Application.Exit(); };
-            this.Controls.Add(btnExit);
+            btnExit.Click += (s, e) => Application.Exit();
+            panelHeader.Controls.Add(btnExit);
         }
 
-        // --- Event Handlers (Button Actions) ---
-
-        private void OpenUnitsForm(object sender, EventArgs e)
+        // --- HELPER: Sidebar Button Creator ---
+        private void CreateSidebarButton(string text, EventHandler action)
         {
-            // This creates the UnitsForm and opens it as a popup
-            UnitsForm frm = new UnitsForm();
-            frm.ShowDialog();
+            Button btn = new Button();
+            btn.Text = "  " + text;
+            btn.Dock = DockStyle.Top;
+            btn.Height = 45;
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+
+            // 1. CHANGE: Match the sidebar background (WhiteSmoke)
+            btn.BackColor = Color.WhiteSmoke;
+
+            // 2. CHANGE: Text color should be Dark (Black/DarkGray) to be visible
+            btn.ForeColor = Color.FromArgb(64, 64, 64);
+
+            btn.TextAlign = ContentAlignment.MiddleLeft;
+            btn.Font = new Font("Segoe UI", 15, FontStyle.Bold);
+            btn.Cursor = Cursors.Hand;
+
+            // 3. CHANGE: Update Hover Effects for Light Theme
+            btn.MouseEnter += (s, e) => {
+                btn.BackColor = Color.Gainsboro; // Light Gray when hovering
+                btn.ForeColor = Color.Black;
+            };
+
+            btn.MouseLeave += (s, e) => {
+                btn.BackColor = Color.WhiteSmoke; // Back to normal
+                btn.ForeColor = Color.FromArgb(64, 64, 64);
+            };
+
+            btn.Click += action;
+            panelSidebar.Controls.Add(btn);
+            panelSidebar.Controls.SetChildIndex(btn, 0);
         }
 
-        private void OpenCategoriesForm(object sender, EventArgs e)
+        // --- HELPER: Header Button Creator ---
+        private void CreateHeaderButton(string text, Color color, int x, int y, EventHandler action)
         {
-            // This creates the UnitsForm and opens it as a popup
-            CategoriesForm frm = new CategoriesForm();
-            frm.ShowDialog();
+            Button btn = new Button();
+            btn.Text = text;
+            btn.Location = new Point(x, y);
+            btn.Size = new Size(120, 60);
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+            btn.BackColor = color;
+            btn.ForeColor = Color.White;
+            btn.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+            btn.Cursor = Cursors.Hand;
+
+            // Rounded corners logic is complex in pure code, keeping it square/flat for now
+            // or we could draw it, but flat is cleaner for this stage.
+
+            btn.Click += action;
+            panelHeader.Controls.Add(btn);
         }
 
-        private void OpenIngredientsForm(object sender, EventArgs e)
+        // --- CORE LOGIC: Loading Forms inside the Panel ---
+        private void OpenChildForm(Form childForm)
         {
-            // If you haven't created IngredientsForm yet, this might crash.
-            // But since we are building it next, I'll leave the connection here.
-            // If it shows an error "IngredientsForm could not be found", 
-            // comment out the lines inside this bracket for now.
+            // 1. Close the current form if open
+            if (activeForm != null)
+                activeForm.Close();
 
-            IngredientsForm frm = new IngredientsForm();
-            frm.ShowDialog();
-        }
+            // 2. Setup the new form
+            activeForm = childForm;
+            childForm.TopLevel = false; // Important: Make it behave like a control
+            childForm.FormBorderStyle = FormBorderStyle.None; // Remove border/title bar
+            childForm.Dock = DockStyle.Fill; // Fill the empty space
 
-        private void OpenPurchasesForm(object sender, EventArgs e)
-        {
-            PurchasesForm frm = new PurchasesForm();
-            frm.ShowDialog();
-        }
-
-        private void OpenMenuForm(object sender, EventArgs e)
-        {
-            MenuForm frm = new MenuForm();
-            frm.ShowDialog();
-        }
-
-        private void OpenRecipesForm(object sender, EventArgs e)
-        {
-            RecipesForm frm = new RecipesForm();
-            frm.ShowDialog();
-        }
-
-        private void OpenProductionForm(object sender, EventArgs e)
-        {
-            ProductionForm frm = new ProductionForm();
-            frm.ShowDialog();
-        }
-
-        private void OpenWastageForm(object sender, EventArgs e)
-        {
-            WastageForm frm = new WastageForm();
-            frm.ShowDialog();
+            // 3. Add to panel and show
+            panelContent.Controls.Add(childForm);
+            panelContent.Tag = childForm;
+            childForm.BringToFront();
+            childForm.Show();
         }
     }
 }

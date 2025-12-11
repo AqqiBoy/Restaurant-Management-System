@@ -30,6 +30,10 @@ namespace RestaurantManagementSystem
 
         private void InitializeLayout()
         {
+
+            this.Dock = DockStyle.Fill; // Allow it to stretch
+            this.BackColor = Color.White; // Ensure background matches
+
             int x = 20; int y = 20;
 
             lblName = new Label() { Text = "Item Name:", Location = new Point(x, y), AutoSize = true };
@@ -58,7 +62,9 @@ namespace RestaurantManagementSystem
 
             dgvMenu = new DataGridView();
             dgvMenu.Location = new Point(20, y + 60);
-            dgvMenu.Size = new Size(440, 250);
+            // This tells the grid to stretch right and down as the form grows
+            dgvMenu.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
+
             dgvMenu.ReadOnly = true;
             dgvMenu.AllowUserToAddRows = false;
             dgvMenu.RowHeadersVisible = false;
