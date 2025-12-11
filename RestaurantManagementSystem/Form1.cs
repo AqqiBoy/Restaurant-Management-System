@@ -120,17 +120,23 @@ namespace RestaurantManagementSystem
                 if (activeForm != null) activeForm.Close(); // Close any open form
             });
 
-            // 2. Dine In (POS)
+            // 2. Dine In
             startX += btnWidth + spacing;
-            CreateHeaderButton("Dine In", Color.Crimson, startX, startY, (s, e) => MessageBox.Show("Dine In Module Coming Soon"));
+            CreateHeaderButton("Dine In", Color.Crimson, startX, startY, (s, e) => {
+                OpenPOS(new OrderForm("Dine In")); // <--- Changed to OpenPOS
+            });
 
             // 3. Take Away
             startX += btnWidth + spacing;
-            CreateHeaderButton("Take Away", Color.Orange, startX, startY, (s, e) => MessageBox.Show("Take Away Module Coming Soon"));
+            CreateHeaderButton("Take Away", Color.Orange, startX, startY, (s, e) => {
+                OpenPOS(new OrderForm("Take Away")); // <--- Changed to OpenPOS
+            });
 
             // 4. Delivery
             startX += btnWidth + spacing;
-            CreateHeaderButton("Delivery", Color.Teal, startX, startY, (s, e) => MessageBox.Show("Delivery Module Coming Soon"));
+            CreateHeaderButton("Delivery", Color.Teal, startX, startY, (s, e) => {
+                OpenPOS(new OrderForm("Delivery")); // <--- Changed to OpenPOS
+            });
 
             // 5. Reports
             startX += btnWidth + spacing;
@@ -224,6 +230,24 @@ namespace RestaurantManagementSystem
             panelContent.Tag = childForm;
             childForm.BringToFront();
             childForm.Show();
+        }
+
+        // --- NEW HELPER FOR POS FULL SCREEN ---
+        private void OpenPOS(Form childForm)
+        {
+            // 1. Hide the Dashboard Elements
+            panelSidebar.Visible = false;
+            panelHeader.Visible = false;
+
+            // 2. Open the form using your existing logic
+            OpenChildForm(childForm);
+
+            // 3. LISTEN: When the OrderForm is closed, bring back the Dashboard
+            childForm.FormClosed += (s, e) =>
+            {
+                panelSidebar.Visible = true;
+                panelHeader.Visible = true;
+            };
         }
     }
 }

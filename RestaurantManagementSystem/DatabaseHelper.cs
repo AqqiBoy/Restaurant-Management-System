@@ -118,6 +118,31 @@ namespace RestaurantManagementSystem
                         FOREIGN KEY(ingredient_id) REFERENCES Ingredients(ingredient_id)
                     );";
                 ExecuteQuery(connection, sqlStockAdjustments);
+
+                string sqlOrders = @"
+                    CREATE TABLE IF NOT EXISTS Orders (
+                        order_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        order_type TEXT,        -- 'DineIn', 'TakeAway', 'Delivery'
+                        table_number TEXT,      -- For DineIn
+                        customer_name TEXT,     -- For Delivery/TakeAway
+                        customer_phone TEXT,    -- For Delivery/TakeAway
+                        total_amount REAL DEFAULT 0
+                    );";
+                ExecuteQuery(connection, sqlOrders);
+
+                string sqlOrderDetails = @"
+                     CREATE TABLE IF NOT EXISTS OrderDetails (
+                        detail_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        order_id INTEGER NOT NULL,
+                        menu_item_id INTEGER NOT NULL,
+                        quantity INTEGER NOT NULL,
+                        price_per_item REAL NOT NULL, -- Price at the moment of sale
+                        total_price REAL NOT NULL,
+                        FOREIGN KEY(order_id) REFERENCES Orders(order_id),
+                        FOREIGN KEY(menu_item_id) REFERENCES MenuItems(menu_item_id)
+                    );";
+                ExecuteQuery(connection, sqlOrderDetails);
             }
         }
 
