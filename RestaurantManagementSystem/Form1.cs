@@ -11,6 +11,7 @@ namespace RestaurantManagementSystem
         private Panel panelHeader;
         private Panel panelContent;
         private Panel panelLogo; // Top-left corner box
+        private bool sidebarInOrderMode = false;
 
         // To track the current form open inside the panel
         private Form activeForm = null;
@@ -36,19 +37,7 @@ namespace RestaurantManagementSystem
             panelSidebar.BackColor = Color.WhiteSmoke;
             this.Controls.Add(panelSidebar);
 
-            // 2. Logo Panel (Top Left inside Sidebar)
-            panelLogo = new Panel();
-            panelLogo.Dock = DockStyle.Top;
-            panelLogo.Height = 100;
-            panelLogo.BackColor = Color.WhiteSmoke;
-            // Add a Label for App Name
-            Label lblName = new Label();
-            lblName.Text = "RESTAURANT\nMANAGER"; // \n for new line
-            lblName.ForeColor = Color.Black;
-            lblName.Font = new Font("Segoe UI", 14, FontStyle.Bold);
-            lblName.TextAlign = ContentAlignment.MiddleCenter;
-            lblName.Dock = DockStyle.Fill;
-            panelLogo.Controls.Add(lblName);
+            panelLogo = CreateLogoPanel();
             panelSidebar.Controls.Add(panelLogo);
 
             // 3. Header Panel (Top) - Light/Color Theme
@@ -79,6 +68,89 @@ namespace RestaurantManagementSystem
             AddHeaderButtons();
         }
 
+        private Panel CreateLogoPanel()
+        {
+            Panel logo = new Panel();
+            logo.Dock = DockStyle.Top;
+            logo.Height = 100;
+            logo.BackColor = Color.WhiteSmoke;
+
+            Label lblName = new Label();
+            lblName.Text = "RESTAURANT\nMANAGER";
+            lblName.ForeColor = Color.Black;
+            lblName.Font = new Font("Segoe UI", 14, FontStyle.Bold);
+            lblName.TextAlign = ContentAlignment.MiddleCenter;
+            lblName.Dock = DockStyle.Fill;
+            logo.Controls.Add(lblName);
+
+            return logo;
+        }
+
+        private Panel SwitchSidebarToCategories()
+        {
+            panelSidebar.SuspendLayout();
+            panelSidebar.Controls.Clear();
+            panelSidebar.AutoScroll = false;
+
+            // Use a table layout to avoid dock/z-order issues hiding buttons.
+            TableLayoutPanel sidebarLayout = new TableLayoutPanel();
+            sidebarLayout.Dock = DockStyle.Fill;
+            sidebarLayout.BackColor = Color.WhiteSmoke;
+            sidebarLayout.ColumnCount = 1;
+            sidebarLayout.RowCount = 3;
+            sidebarLayout.Padding = new Padding(0);
+            sidebarLayout.Margin = new Padding(0);
+            sidebarLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F));   // title (Categories)
+            sidebarLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 100F));  // logo
+            sidebarLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));   // categories list
+            sidebarLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            panelSidebar.Controls.Add(sidebarLayout);
+
+            Label lblCategories = new Label()
+            {
+                Text = "  CATEGORIES",
+                ForeColor = Color.Gray,
+                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.BottomLeft,
+                Font = new Font("Segoe UI", 8, FontStyle.Bold)
+            };
+            sidebarLayout.Controls.Add(lblCategories, 0, 0);
+
+            panelLogo = CreateLogoPanel();
+            panelLogo.Dock = DockStyle.Fill;
+            sidebarLayout.Controls.Add(panelLogo, 0, 1);
+
+            Panel categoriesHost = new Panel();
+            categoriesHost.Dock = DockStyle.Fill;
+            categoriesHost.AutoScroll = true;
+            categoriesHost.BackColor = Color.WhiteSmoke;
+            categoriesHost.Margin = new Padding(0);
+            categoriesHost.Padding = new Padding(0);
+            sidebarLayout.Controls.Add(categoriesHost, 0, 2);
+
+            sidebarInOrderMode = true;
+            panelSidebar.ResumeLayout(true);
+            return categoriesHost;
+        }
+
+        private void RestoreDashboardSidebar()
+        {
+            panelSidebar.Controls.Clear();
+            panelSidebar.AutoScroll = false;
+
+            panelLogo = CreateLogoPanel();
+            panelSidebar.Controls.Add(panelLogo);
+
+            AddSidebarButtons();
+            sidebarInOrderMode = false;
+        }
+
+        private void OpenOrderForm(string orderType)
+        {
+            Panel categoriesHost = SwitchSidebarToCategories();
+            OpenChildForm(new OrderForm(orderType, categoriesHost));
+        }
+
         // --- SECTION A: SIDEBAR BUTTONS (Setup & Admin) ---
         private void AddSidebarButtons()
         {
@@ -99,6 +171,8 @@ namespace RestaurantManagementSystem
             CreateSidebarButton("Manage Recipes", (s, e) => OpenChildForm(new RecipesForm()));
             // 8. Wastage
             CreateSidebarButton("Stock Wastage", (s, e) => OpenChildForm(new WastageForm()));
+            // 9. Orders
+            CreateSidebarButton("View Orders", (s, e) => OpenChildForm(new OrdersForm()));
 
             // Label for Section
             Label lblSetup = new Label() { Text = "  BACK OFFICE SETUP", ForeColor = Color.Gray, Dock = DockStyle.Top, Height = 30, TextAlign = ContentAlignment.BottomLeft, Font = new Font("Segoe UI", 8, FontStyle.Bold) };
@@ -117,25 +191,34 @@ namespace RestaurantManagementSystem
 
             // 1. Dashboard (Home)
             CreateHeaderButton("Dashboard", Color.DarkSlateBlue, startX, startY, (s, e) => {
-                if (activeForm != null) activeForm.Close(); // Close any open form
+                if (activeForm is OrderForm)
+                {
+                    RestoreDashboardSidebar();
+                }
+
+                if (activeForm != null)
+                {
+                    activeForm.Close();
+                    activeForm = null;
+                }
             });
 
             // 2. Dine In
             startX += btnWidth + spacing;
             CreateHeaderButton("Dine In", Color.Crimson, startX, startY, (s, e) => {
-                OpenPOS(new OrderForm("Dine In")); // <--- Changed to OpenPOS
+                OpenOrderForm("Dine In");
             });
 
             // 3. Take Away
             startX += btnWidth + spacing;
             CreateHeaderButton("Take Away", Color.Orange, startX, startY, (s, e) => {
-                OpenPOS(new OrderForm("Take Away")); // <--- Changed to OpenPOS
+                OpenOrderForm("Take Away");
             });
 
             // 4. Delivery
             startX += btnWidth + spacing;
             CreateHeaderButton("Delivery", Color.Teal, startX, startY, (s, e) => {
-                OpenPOS(new OrderForm("Delivery")); // <--- Changed to OpenPOS
+                OpenOrderForm("Delivery");
             });
 
             // 5. Reports
@@ -146,13 +229,21 @@ namespace RestaurantManagementSystem
             Button btnExit = new Button();
             btnExit.Text = "X";
             btnExit.Size = new Size(40, 40);
-            btnExit.Location = new Point(Screen.PrimaryScreen.Bounds.Width - 320, 20); // Anchor right
+            btnExit.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnExit.FlatStyle = FlatStyle.Flat;
             btnExit.FlatAppearance.BorderSize = 0;
             btnExit.BackColor = Color.IndianRed;
             btnExit.ForeColor = Color.White;
             btnExit.Click += (s, e) => Application.Exit();
             panelHeader.Controls.Add(btnExit);
+
+            // Position relative to the header panel, not the screen.
+            void PositionExitButton()
+            {
+                btnExit.Location = new Point(panelHeader.ClientSize.Width - btnExit.Width - 20, 20);
+            }
+            PositionExitButton();
+            panelHeader.SizeChanged += (s, e) => PositionExitButton();
         }
 
         // --- HELPER: Sidebar Button Creator ---
@@ -215,7 +306,15 @@ namespace RestaurantManagementSystem
         // --- CORE LOGIC: Loading Forms inside the Panel ---
         private void OpenChildForm(Form childForm)
         {
-            // 1. Close the current form if open
+            bool oldIsOrder = activeForm is OrderForm;
+            bool newIsOrder = childForm is OrderForm;
+
+            if (oldIsOrder && !newIsOrder)
+            {
+                RestoreDashboardSidebar();
+            }
+
+            // Close the current form if open
             if (activeForm != null)
                 activeForm.Close();
 
@@ -232,22 +331,5 @@ namespace RestaurantManagementSystem
             childForm.Show();
         }
 
-        // --- NEW HELPER FOR POS FULL SCREEN ---
-        private void OpenPOS(Form childForm)
-        {
-            // 1. Hide the Dashboard Elements
-            panelSidebar.Visible = false;
-            panelHeader.Visible = false;
-
-            // 2. Open the form using your existing logic
-            OpenChildForm(childForm);
-
-            // 3. LISTEN: When the OrderForm is closed, bring back the Dashboard
-            childForm.FormClosed += (s, e) =>
-            {
-                panelSidebar.Visible = true;
-                panelHeader.Visible = true;
-            };
-        }
     }
 }

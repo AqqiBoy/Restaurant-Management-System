@@ -96,27 +96,35 @@ namespace RestaurantManagementSystem
             };
             grpIngredients.Controls.Add(btnRemoveRow);
 
-            // 3. The Grid
-            dgvRecipe = new DataGridView();
-            dgvRecipe.Location = new Point(20, y + 120);
-            // This tells the grid to stretch right and down as the form grows
-            dgvRecipe.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
+            // 3. Lower Area (Grid + Save Button)
+            int lowerTop = y + 120;
+            Panel pnlLower = new Panel();
+            pnlLower.Location = new Point(20, lowerTop);
+            pnlLower.Size = new Size(580, this.ClientSize.Height - lowerTop - 20);
+            pnlLower.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
+            pnlLower.BackColor = Color.White;
+            this.Controls.Add(pnlLower);
 
+            // The Grid (fills remaining space above Save)
+            dgvRecipe = new DataGridView();
+            dgvRecipe.Dock = DockStyle.Fill;
             dgvRecipe.ReadOnly = true;
             dgvRecipe.AllowUserToAddRows = false;
             dgvRecipe.RowHeadersVisible = false;
             dgvRecipe.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            this.Controls.Add(dgvRecipe);
+            dgvRecipe.BackgroundColor = Color.White;
+            dgvRecipe.BorderStyle = BorderStyle.None;
+            pnlLower.Controls.Add(dgvRecipe);
 
-            // 4. BIG SAVE BUTTON
+            // BIG SAVE BUTTON (always visible at bottom)
             btnSaveRecipe = new Button();
             btnSaveRecipe.Text = "SAVE ENTIRE RECIPE";
-            btnSaveRecipe.Location = new Point(20, y + 390);
-            btnSaveRecipe.Size = new Size(580, 50);
+            btnSaveRecipe.Dock = DockStyle.Bottom;
+            btnSaveRecipe.Height = 50;
             btnSaveRecipe.BackColor = Color.LightGreen;
             btnSaveRecipe.Font = new Font("Segoe UI", 12, FontStyle.Bold);
             btnSaveRecipe.Click += BtnSaveRecipe_Click;
-            this.Controls.Add(btnSaveRecipe);
+            pnlLower.Controls.Add(btnSaveRecipe);
         }
 
         // --- SETUP ---

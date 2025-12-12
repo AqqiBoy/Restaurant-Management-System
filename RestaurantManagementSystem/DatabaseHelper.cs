@@ -127,6 +127,7 @@ namespace RestaurantManagementSystem
                         table_number TEXT,      -- For DineIn
                         customer_name TEXT,     -- For Delivery/TakeAway
                         customer_phone TEXT,    -- For Delivery/TakeAway
+                        customer_address TEXT,  -- For Delivery
                         total_amount REAL DEFAULT 0
                     );";
                 ExecuteQuery(connection, sqlOrders);
